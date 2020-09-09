@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Welcome to Firebase Hosting</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/7.19.1/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/7.19.1/firebase-auth.js"></script>
+    <script defer src="/__/firebase/7.19.1/firebase-database.js"></script>
+    <script defer src="/__/firebase/7.19.1/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/7.19.1/firebase-storage.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+  </head>
+
+  <body>
+    <main>
+      <section name="parameters">
+        <h2>Parametros de operacion</h2>
+        <section name="temperature-range">
+          <p>Introduzca rango aceptable de temperatura en grados Celcius</p>
+          <form id="tmp-range-form">
+            <label for="tmp-lo">Temperatura mínima nominal</label>
+            <input type="number" step="0.01" id="tmp-lo" />
+
+            <label for="tmp-hi">Temperatura máxima nominal</label>
+            <input type="number" step="0.01" id="tmp-hi" />
+
+            <label for="tmp-delta">Cambio aceptable de temperatura</label>
+            <input type="number" step="0.01" id="tmp-delta" />
+
+            <button type="submit">Agregar</button>
+          </form>
+        </section>
+
+        <section name="humidity-range">
+          <p>Introduzca los porcentajes de humedad aceptables</p>
+          <form id="hty-range-form">
+            <label for="hty-min">Porcentaje de humedad mínina nominal</label>
+            <input type="number" step="0.01" min="0" max="100" id="hty-min" />
+
+            <label for="hty-max">Porcentaje de humedad maximo nominal</label>
+            <input type="number" step="0.01" min="0" max="100" id="hty-max" />
+
+            <label for="hty-delta">Delta aceptable</label>
+            <input type="number" step="0.01" min="0" max="100" id="hty-delta" />
+
+            <button type="submit">Agregar</button>
+          </form>
+        </section>
+
+        <section></section>
+      </section>
+    </main>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        //
+        // firebase.auth().onAuthStateChanged(user => { });
+        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+        // firebase.messaging().requestPermission().then(() => { });
+        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+        //
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+
+        try {
+          let app = firebase.app();
+          let features = ["auth", "database", "messaging", "storage"].filter(
+            (feature) => typeof app[feature] === "function"
+          );
+        } catch (e) {
+          console.error(e);
+          document.getElementById("load").innerHTML =
+            "Error loading the Firebase SDK, check the console.";
+        }
+      });
+    </script>
+    <script src="./index.js"></script>
+  </body>
+</html>
