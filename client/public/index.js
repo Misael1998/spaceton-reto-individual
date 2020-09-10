@@ -27,13 +27,21 @@ let actualHumidity = 0;
 const simRandom = () => {
   let tmpRnd;
   let htyRnd;
-  setInterval(() => {
-    tmpRnd = Math.floor(Math.random() * 200) - 100;
-    htyRnd = Math.floor(Math.random() * 100);
+  const randn_bm = () => {
+    let u = 0;
+    let v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    num = num / 10.0 + 0.5;
+    if (num > 1 || num < 0) return randn_bm();
+    return num;
+  };
+  tmpRnd = Math.floor(randn_bm() * 200) - 100;
+  htyRnd = Math.floor(randn_bm() * 100);
 
-    tmpDisplay.innerHTML = `Temperatura actual: ${tmpRnd} C`;
-    htyDisplay.innerHTML = `Humedad actual: ${htyRnd} %`;
-  }, 10000);
+  tmpDisplay.innerHTML = `Temperatura actual: ${tmpRnd} C`;
+  htyDisplay.innerHTML = `Humedad actual: ${htyRnd} %`;
 };
 
 const getValues = () => {
@@ -191,3 +199,4 @@ tmpRangeForm.addEventListener("submit", onTmpSubmit);
 htyRangeForm.addEventListener("submit", onHtySubmit);
 
 //Alert condition
+setInterval(simRandom, 1000);
