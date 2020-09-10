@@ -14,7 +14,10 @@
     <script defer src="/__/firebase/7.19.1/firebase-storage.js"></script>
     <!-- initialize the SDK after all desired features are loaded -->
     <script defer src="/__/firebase/init.js"></script>
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"
       integrity="sha512-WIklPM6qPCIp6d3fSSr90j+1unQHUOoWDS4sdTiR8gxUTnyZ8S2Mr8e10sKKJ/bhJgpAa/qG068RDkg6fIlNFA=="
@@ -23,10 +26,10 @@
   </head>
 
   <body>
-    <main>
-      <section name="parameters">
-        <h2>Parametros de operacion</h2>
-        <section name="temperature-range">
+    <main class="container">
+      <h2>Parametros de operacion</h2>
+      <section class="row" name="parameters">
+        <section class="col s6" name="temperature-range">
           <p>Introduzca rango aceptable de temperatura en grados Celcius</p>
           <form id="tmp-range-form">
             <label for="tmp-lo">Temperatura mínima nominal</label>
@@ -42,7 +45,7 @@
           </form>
         </section>
 
-        <section name="humidity-range">
+        <section class="col s6" name="humidity-range">
           <p>Introduzca los porcentajes de humedad aceptables</p>
           <form id="hty-range-form">
             <label for="hty-min">Porcentaje de humedad mínina nominal</label>
@@ -59,26 +62,32 @@
         </section>
       </section>
 
-      <section name="parameters-display">
-        <h2>Parametros</h2>
-        <article>
+      <h2>Parametros</h2>
+      <section class="row" name="parameters-display">
+        <article class="col s6" id="tmp-params">
           <h3>Temperatura</h3>
           <p>Temperatura Máxima: -</p>
           <p>Temperatura Mínima: -</p>
         </article>
-        <article>
+        <article class="col s6" id="hty-params">
           <h3>Humedad</h3>
           <p>Humedad Máxima: -</p>
           <p>Humedad Mínima: -</p>
         </article>
       </section>
 
-      <section name="readings">
-        <article name="temperature-readings">
+      <section class="row" name="readings">
+        <article class="col s6" name="temperature-readings">
+          <section>
+            <h4 id="tmp-display">Temperatura actual: - C</h4>
+          </section>
           <div id="tmp-canvas"></div>
         </article>
 
-        <article name="humidity-readings">
+        <article class="col s6" name="humidity-readings">
+          <section>
+            <h4 id="hty-display">Humedad actual: - %</h4>
+          </section>
           <div id="hty-canvas"></div>
         </article>
       </section>

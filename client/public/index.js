@@ -13,6 +13,35 @@ const htyValues = {};
 //Canvas
 const tmpCanvas = document.getElementById("tmp-canvas");
 const htyCanvas = document.getElementById("hty-canvas");
+//Readings displays
+const tmpDisplay = document.getElementById("tmp-display");
+const htyDisplay = document.getElementById("hty-display");
+//Parameters
+const tmpParams = document.getElementById("tmp-params");
+const htyParams = document.getElementById("hty-params");
+//inputs
+let actualTemperature = 0;
+let actualHumidity = 0;
+
+//simulation parameters
+const simRandom = () => {
+  let tmpRnd;
+  let htyRnd;
+  setInterval(() => {
+    tmpRnd = Math.floor(Math.random() * 200) - 100;
+    htyRnd = Math.floor(Math.random() * 100);
+
+    tmpDisplay.innerHTML = `Temperatura actual: ${tmpRnd} C`;
+    htyDisplay.innerHTML = `Humedad actual: ${htyRnd} %`;
+  }, 10000);
+};
+
+const getValues = () => {
+  return {
+    actualTemperature,
+    actualHumidity,
+  };
+};
 
 //Temperature sketch
 const tmpSketch = (p) => {
@@ -22,7 +51,7 @@ const tmpSketch = (p) => {
   let alertSize;
 
   p.setup = () => {
-    p.createCanvas(500, 50);
+    p.createCanvas(tmpCanvas.clientWidth, 50);
     p.background(0);
     p.noStroke();
 
@@ -61,7 +90,7 @@ const tmpSketch = (p) => {
     p.rect(x, 0, alertSize, height - 5);
 
     p.fill(white);
-    p.rect(20, height - 5, 5, 5);
+    p.rect(100, height - 5, 5, 5);
   };
 };
 
@@ -69,13 +98,64 @@ const tmpSketchObj = new p5(tmpSketch, tmpCanvas);
 
 //Humidity sketch
 const htySketch = (p) => {
+  let width;
+  let height;
+  let safeSize;
+  let alertSize;
+
   p.setup = () => {
-    p.createCanvas(500, 50);
+    p.createCanvas(htyCanvas.clientWidth, 50);
     p.background(0);
+    p.noStroke();
+
+    width = p.width;
+    height = p.height;
+    safeSize = width / 3;
+    alertSize = safeSize / 2;
+  };
+
+  p.draw = () => {
+    p.colorMode(p.RGB);
+    let red = p.color(255, 69, 0);
+    let green = p.color(69, 255, 0);
+    let yellow = p.color(240, 255, 0);
+    let white = p.color(250, 250, 250);
+
+    let x = 0;
+
+    p.fill(red);
+    p.rect(x, 0, alertSize, height - 5);
+    x += alertSize;
+
+    p.fill(yellow);
+    p.rect(x, 0, alertSize, height - 5);
+    x += alertSize;
+
+    p.fill(green);
+    p.rect(x, 0, safeSize, height - 5);
+    x += safeSize;
+
+    p.fill(yellow);
+    p.rect(x, 0, alertSize, height - 5);
+    x += alertSize;
+
+    p.fill(red);
+    p.rect(x, 0, alertSize, height - 5);
+
+    p.fill(white);
+    p.rect(100, height - 5, 5, 5);
   };
 };
 
 const htySketchObj = new p5(htySketch, htyCanvas);
+
+const format = (str, min, max, und) => {
+  return `
+        <h3>${str}</h3>
+        <p>${str} Máximo: ${max} ${und}</p>
+        <p>${str} Mínimo: ${min} ${und}</p>
+    `;
+};
 
 const onTmpSubmit = (e) => {
   e.preventDefault();
@@ -88,7 +168,8 @@ const onTmpSubmit = (e) => {
   tmpValues.minAceptable = min - delta;
   tmpValues.maxAceptable = max + delta;
   tmpValues.middle = max - min / 2;
-  console.log(tmpValues);
+
+  tmpParams.innerHTML = format("Temperatura", min, max, "C");
 };
 
 const onHtySubmit = (e) => {
@@ -102,8 +183,11 @@ const onHtySubmit = (e) => {
   htyValues.minAceptable = min - delta <= 0 ? 0 : min - delta;
   htyValues.maxAceptable = max + delta;
   htyValues.middle = max - min / 2;
-  console.log(htyValues);
+
+  htyParams.innerHTML = format("Humedad", min, max, "%");
 };
 
 tmpRangeForm.addEventListener("submit", onTmpSubmit);
 htyRangeForm.addEventListener("submit", onHtySubmit);
+
+//Alert condition
