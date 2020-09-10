@@ -77,10 +77,33 @@ const simRandom = () => {
   };
   tmpRnd = tempSim();
 
+  actualTemperature = tmpRnd;
   tmpDisplay.innerHTML = `Temperatura actual: ${
     isNaN(tmpRnd) ? "-" : tmpRnd
   } C`;
+  actualHumidity = htyRnd;
   htyDisplay.innerHTML = `Humedad actual: ${htyRnd} %`;
+};
+
+//Status of values
+const getStatus = (value, valueRanges) => {
+  let status = "green";
+  if (value < valueRanges.minAceptable || value > valueRanges.maxAceptable) {
+    status = "red";
+  }
+
+  if (value >= valueRanges.minNominal && value <= valueRanges.maxNominal) {
+    status = "green";
+  }
+
+  if (
+    (value < valueRanges.minNominal && value >= valueRanges.minAceptable) ||
+    (value > valueRanges.maxNominal && value <= valueRanges.maxAceptable)
+  ) {
+    status = "yellow";
+  }
+
+  return status;
 };
 
 const getValues = () => {
@@ -94,18 +117,13 @@ const getValues = () => {
 const tmpSketch = (p) => {
   let width;
   let height;
-  let safeSize;
-  let alertSize;
 
   p.setup = () => {
     p.createCanvas(tmpCanvas.clientWidth, 50);
     p.background(0);
-    p.noStroke();
 
     width = p.width;
     height = p.height;
-    safeSize = width / 3;
-    alertSize = safeSize / 2;
   };
 
   p.draw = () => {
@@ -117,27 +135,39 @@ const tmpSketch = (p) => {
 
     let x = 0;
 
-    p.fill(red);
-    p.rect(x, 0, alertSize, height - 5);
-    x += alertSize;
+    // p.fill(red);
+    // p.rect(c, 0, alertSize, height - 5);
+    for (let i = 0; i < width; i++) {
+      let c = p.map(
+        i,
+        0,
+        width,
+        tmpValues.minAceptable - 10,
+        tmpValues.maxAceptable + 10
+      );
+      color = getStatus(c, tmpValues);
+      p.line(i, 0, i, height - 5);
+      if (color == "green") {
+        p.stroke(green);
+      }
+      if (color == "red") {
+        p.stroke(red);
+      }
+      if (color == "yellow") {
+        p.stroke(yellow);
+      }
+    }
 
-    p.fill(yellow);
-    p.rect(x, 0, alertSize, height - 5);
-    x += alertSize;
-
-    p.fill(green);
-    p.rect(x, 0, safeSize, height - 5);
-    x += safeSize;
-
-    p.fill(yellow);
-    p.rect(x, 0, alertSize, height - 5);
-    x += alertSize;
-
-    p.fill(red);
-    p.rect(x, 0, alertSize, height - 5);
-
+    //indicator
+    const val = p.map(
+      actualTemperature,
+      tmpValues.minAceptable - 10,
+      tmpValues.maxAceptable + 10,
+      0,
+      width
+    );
     p.fill(white);
-    p.rect(100, height - 5, 5, 5);
+    p.rect(val || width / 2, height - 5, 5, 5);
   };
 };
 
@@ -157,8 +187,8 @@ const htySketch = (p) => {
 
     width = p.width;
     height = p.height;
-    safeSize = width / 3;
-    alertSize = safeSize / 2;
+    safeSize = width * 0.6;
+    alertSize = width * 0.1;
   };
 
   p.draw = () => {
@@ -240,4 +270,7 @@ tmpRangeForm.addEventListener("submit", onTmpSubmit);
 htyRangeForm.addEventListener("submit", onHtySubmit);
 
 //Alert condition
-setInterval(simRandom, 1000);
+setInterval(() => {
+  simRandom();
+  tmpSketchObj.setup();
+}, 1000);
