@@ -14,6 +14,12 @@
     <script defer src="/__/firebase/7.19.1/firebase-storage.js"></script>
     <!-- initialize the SDK after all desired features are loaded -->
     <script defer src="/__/firebase/init.js"></script>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"
+      integrity="sha512-WIklPM6qPCIp6d3fSSr90j+1unQHUOoWDS4sdTiR8gxUTnyZ8S2Mr8e10sKKJ/bhJgpAa/qG068RDkg6fIlNFA=="
+      crossorigin="anonymous"
+    ></script>
   </head>
 
   <body>
@@ -51,8 +57,30 @@
             <button type="submit">Agregar</button>
           </form>
         </section>
+      </section>
 
-        <section></section>
+      <section name="parameters-display">
+        <h2>Parametros</h2>
+        <article>
+          <h3>Temperatura</h3>
+          <p>Temperatura Máxima: -</p>
+          <p>Temperatura Mínima: -</p>
+        </article>
+        <article>
+          <h3>Humedad</h3>
+          <p>Humedad Máxima: -</p>
+          <p>Humedad Mínima: -</p>
+        </article>
+      </section>
+
+      <section name="readings">
+        <article name="temperature-readings">
+          <div id="tmp-canvas"></div>
+        </article>
+
+        <article name="humidity-readings">
+          <div id="hty-canvas"></div>
+        </article>
       </section>
     </main>
 

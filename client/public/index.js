@@ -10,6 +10,72 @@ const htyMin = document.getElementById("hty-min");
 const htyMax = document.getElementById("hty-max");
 const htyDelta = document.getElementById("hty-delta");
 const htyValues = {};
+//Canvas
+const tmpCanvas = document.getElementById("tmp-canvas");
+const htyCanvas = document.getElementById("hty-canvas");
+
+//Temperature sketch
+const tmpSketch = (p) => {
+  let width;
+  let height;
+  let safeSize;
+  let alertSize;
+
+  p.setup = () => {
+    p.createCanvas(500, 50);
+    p.background(0);
+    p.noStroke();
+
+    width = p.width;
+    height = p.height;
+    safeSize = width / 3;
+    alertSize = safeSize / 2;
+  };
+
+  p.draw = () => {
+    p.colorMode(p.RGB);
+    let red = p.color(255, 69, 0);
+    let green = p.color(69, 255, 0);
+    let yellow = p.color(240, 255, 0);
+    let white = p.color(250, 250, 250);
+
+    let x = 0;
+
+    p.fill(red);
+    p.rect(x, 0, alertSize, height - 5);
+    x += alertSize;
+
+    p.fill(yellow);
+    p.rect(x, 0, alertSize, height - 5);
+    x += alertSize;
+
+    p.fill(green);
+    p.rect(x, 0, safeSize, height - 5);
+    x += safeSize;
+
+    p.fill(yellow);
+    p.rect(x, 0, alertSize, height - 5);
+    x += alertSize;
+
+    p.fill(red);
+    p.rect(x, 0, alertSize, height - 5);
+
+    p.fill(white);
+    p.rect(20, height - 5, 5, 5);
+  };
+};
+
+const tmpSketchObj = new p5(tmpSketch, tmpCanvas);
+
+//Humidity sketch
+const htySketch = (p) => {
+  p.setup = () => {
+    p.createCanvas(500, 50);
+    p.background(0);
+  };
+};
+
+const htySketchObj = new p5(htySketch, htyCanvas);
 
 const onTmpSubmit = (e) => {
   e.preventDefault();
