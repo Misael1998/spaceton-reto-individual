@@ -37,10 +37,49 @@ const simRandom = () => {
     if (num > 1 || num < 0) return randn_bm();
     return num;
   };
-  tmpRnd = Math.floor(randn_bm() * 200) - 100;
-  htyRnd = Math.floor(randn_bm() * 100);
+  tmpRnd = randn_bm();
+  htyRnd = randn_bm();
 
-  tmpDisplay.innerHTML = `Temperatura actual: ${tmpRnd} C`;
+  //Temperature distribution
+  const tempSim = () => {
+    const prob = tmpRnd;
+    if (prob <= 0.8 && prob >= 0.2) {
+      tmpRnd =
+        Math.random() * Math.abs(tmpValues.maxNominal - tmpValues.minNominal);
+      tmpRnd = tmpValues.minNominal + tmpRnd;
+      tmpRnd = tmpRnd.toFixed(2);
+    }
+
+    if (prob > 0.8 && prob <= 0.9) {
+      tmpRnd = Math.random() * tmpValues.delta;
+      tmpRnd = tmpValues.maxNominal + tmpRnd;
+      tmpRnd = tmpRnd.toFixed(2);
+    }
+
+    if (prob >= 0.1 && prob < 0.2) {
+      tmpRnd = Math.random() * tmpValues.delta;
+      tmpRnd = tmpValues.minNominal - tmpRnd;
+      tmpRnd = tmpRnd.toFixed(2);
+    }
+
+    if (prob < 0.1) {
+      tmpRnd = Math.random() * 10;
+      tmpRnd = tmpValues.minAceptable - tmpRnd;
+      tmpRnd = tmpRnd.toFixed(2);
+    }
+
+    if (prob > 0.9) {
+      tmpRnd = Math.random() * 10;
+      tmpRnd = tmpValues.maxAceptable + tmpRnd;
+      tmpRnd = tmpRnd.toFixed(2);
+    }
+    return tmpRnd;
+  };
+  tmpRnd = tempSim();
+
+  tmpDisplay.innerHTML = `Temperatura actual: ${
+    isNaN(tmpRnd) ? "-" : tmpRnd
+  } C`;
   htyDisplay.innerHTML = `Humedad actual: ${htyRnd} %`;
 };
 
@@ -173,6 +212,7 @@ const onTmpSubmit = (e) => {
 
   tmpValues.minNominal = min;
   tmpValues.maxNominal = max;
+  tmpValues.delta = delta;
   tmpValues.minAceptable = min - delta;
   tmpValues.maxAceptable = max + delta;
   tmpValues.middle = max - min / 2;
@@ -188,6 +228,7 @@ const onHtySubmit = (e) => {
 
   htyValues.minNominal = min;
   htyValues.maxNominal = max;
+  htyValues.delta = delta;
   htyValues.minAceptable = min - delta <= 0 ? 0 : min - delta;
   htyValues.maxAceptable = max + delta;
   htyValues.middle = max - min / 2;
