@@ -19,7 +19,7 @@ const htyDisplay = document.getElementById("hty-display");
 //Parameters
 const tmpParams = document.getElementById("tmp-params");
 const htyParams = document.getElementById("hty-params");
-//inputs
+//inputs(kindof)
 let actualTemperature = 0;
 let actualHumidity = 0;
 
@@ -44,35 +44,67 @@ const simRandom = () => {
   const tempSim = () => {
     const prob = tmpRnd;
     if (prob <= 0.8 && prob >= 0.2) {
+      //temperature generator
       tmpRnd =
         Math.random() * Math.abs(tmpValues.maxNominal - tmpValues.minNominal);
       tmpRnd = tmpValues.minNominal + tmpRnd;
       tmpRnd = tmpRnd.toFixed(2);
+
+      //humidity genenerator
+      htyRnd =
+        Math.random() * Math.abs(htyValues.maxNominal - htyValues.minNominal);
+      htyRnd = htyValues.minNominal + htyRnd;
+      htyRnd = htyRnd > 100 ? 100 : htyRnd.toFixed(2);
     }
 
     if (prob > 0.8 && prob <= 0.9) {
+      //temperature generator
       tmpRnd = Math.random() * tmpValues.delta;
       tmpRnd = tmpValues.maxNominal + tmpRnd;
       tmpRnd = tmpRnd.toFixed(2);
+
+      //humidity genenerator
+      htyRnd = Math.random() * htyValues.delta;
+      htyRnd = htyValues.maxNominal + htyRnd;
+      htyRnd = htyRnd > 100 ? 100 : htyRnd.toFixed(2);
     }
 
     if (prob >= 0.1 && prob < 0.2) {
+      //temperature generator
       tmpRnd = Math.random() * tmpValues.delta;
       tmpRnd = tmpValues.minNominal - tmpRnd;
       tmpRnd = tmpRnd.toFixed(2);
+
+      //humidity genenerator
+      htyRnd = Math.random() * htyValues.delta;
+      htyRnd = htyValues.minNominal - htyRnd;
+      htyRnd = htyRnd < 0 ? 0 : htyRnd.toFixed(2);
     }
 
     if (prob < 0.1) {
+      //Temperature generator
       tmpRnd = Math.random() * 10;
       tmpRnd = tmpValues.minAceptable - tmpRnd;
       tmpRnd = tmpRnd.toFixed(2);
+
+      //humidity genenerator
+      htyRnd = Math.random() * htyValues.minAceptable;
+      htyRnd = htyValues.minAceptable - htyRnd;
+      htyRnd = htyRnd < 0 ? 0 : htyRnd.toFixed(2);
     }
 
     if (prob > 0.9) {
+      //Temperature generator
       tmpRnd = Math.random() * 10;
       tmpRnd = tmpValues.maxAceptable + tmpRnd;
       tmpRnd = tmpRnd.toFixed(2);
+
+      //humidity genenerator
+      htyRnd = Math.random() * (100 - htyValues.maxAceptable);
+      htyRnd = htyValues.maxAceptable + htyRnd;
+      htyRnd = htyRnd > 100 ? 100 : htyRnd.toFixed(2);
     }
+
     return tmpRnd;
   };
   tmpRnd = tempSim();
@@ -82,7 +114,7 @@ const simRandom = () => {
     isNaN(tmpRnd) ? "-" : tmpRnd
   } C`;
   actualHumidity = htyRnd;
-  htyDisplay.innerHTML = `Humedad actual: ${htyRnd} %`;
+  htyDisplay.innerHTML = `Humedad actual: ${isNaN(htyRnd) ? "-" : htyRnd} %`;
 };
 
 //Status of values
@@ -132,11 +164,8 @@ const tmpSketch = (p) => {
     let green = p.color(69, 255, 0);
     let yellow = p.color(240, 255, 0);
     let white = p.color(250, 250, 250);
+    let blue = p.color(30, 144, 255);
 
-    let x = 0;
-
-    // p.fill(red);
-    // p.rect(c, 0, alertSize, height - 5);
     for (let i = 0; i < width; i++) {
       let c = p.map(
         i,
@@ -166,8 +195,9 @@ const tmpSketch = (p) => {
       0,
       width
     );
-    p.fill(white);
-    p.rect(val || width / 2, height - 5, 5, 5);
+    p.fill(blue);
+    p.noStroke();
+    p.rect(val || width / 2, 0, 2, height);
   };
 };
 
@@ -177,18 +207,13 @@ const tmpSketchObj = new p5(tmpSketch, tmpCanvas);
 const htySketch = (p) => {
   let width;
   let height;
-  let safeSize;
-  let alertSize;
 
   p.setup = () => {
     p.createCanvas(htyCanvas.clientWidth, 50);
     p.background(0);
-    p.noStroke();
 
     width = p.width;
     height = p.height;
-    safeSize = width * 0.6;
-    alertSize = width * 0.1;
   };
 
   p.draw = () => {
@@ -197,30 +222,28 @@ const htySketch = (p) => {
     let green = p.color(69, 255, 0);
     let yellow = p.color(240, 255, 0);
     let white = p.color(250, 250, 250);
+    let blue = p.color(30, 144, 255);
 
-    let x = 0;
+    for (let i = 0; i < width; i++) {
+      let c = p.map(i, 0, width, 0, 100);
+      color = getStatus(c, htyValues);
+      p.line(i, 0, i, height - 5);
+      if (color == "green") {
+        p.stroke(green);
+      }
+      if (color == "red") {
+        p.stroke(red);
+      }
+      if (color == "yellow") {
+        p.stroke(yellow);
+      }
+    }
 
-    p.fill(red);
-    p.rect(x, 0, alertSize, height - 5);
-    x += alertSize;
-
-    p.fill(yellow);
-    p.rect(x, 0, alertSize, height - 5);
-    x += alertSize;
-
-    p.fill(green);
-    p.rect(x, 0, safeSize, height - 5);
-    x += safeSize;
-
-    p.fill(yellow);
-    p.rect(x, 0, alertSize, height - 5);
-    x += alertSize;
-
-    p.fill(red);
-    p.rect(x, 0, alertSize, height - 5);
-
-    p.fill(white);
-    p.rect(100, height - 5, 5, 5);
+    //indicator
+    const val = p.map(actualHumidity, 0, 100, 0, width);
+    p.fill(blue);
+    p.noStroke();
+    p.rect(val || width / 2, 0, 2, height);
   };
 };
 
@@ -260,7 +283,7 @@ const onHtySubmit = (e) => {
   htyValues.maxNominal = max;
   htyValues.delta = delta;
   htyValues.minAceptable = min - delta <= 0 ? 0 : min - delta;
-  htyValues.maxAceptable = max + delta;
+  htyValues.maxAceptable = max + delta > 100 ? 100 : max + delta;
   htyValues.middle = max - min / 2;
 
   htyParams.innerHTML = format("Humedad", min, max, "%");
