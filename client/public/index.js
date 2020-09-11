@@ -296,4 +296,5 @@ htyRangeForm.addEventListener("submit", onHtySubmit);
 setInterval(() => {
   simRandom();
   tmpSketchObj.setup();
+  htySketchObj.setup();
 }, 1000);
