@@ -22,6 +22,12 @@ const htyParams = document.getElementById("hty-params");
 //inputs(kindof)
 let actualTemperature = 0;
 let actualHumidity = 0;
+//Other
+const paramsContainer = document.getElementById("parameters");
+const btnTg = document.getElementById("toggle-parameters");
+let isExtended = true;
+const playPause = document.getElementById("play-pause");
+let isPlaying = false;
 
 //SIMULATION parameters
 //Normal distribution between 0 and 1
@@ -305,10 +311,35 @@ const onHtySubmit = (e) => {
 tmpRangeForm.addEventListener("submit", onTmpSubmit);
 htyRangeForm.addEventListener("submit", onHtySubmit);
 
-//Alert condition
-setInterval(() => {
-  setActualValues();
-  renderActualValues(actualTemperature, actualHumidity);
-  tmpSketchObj.setup();
-  htySketchObj.setup();
-}, 1000);
+const toggleParameters = (e) => {
+  e.preventDefault();
+  isExtended = !isExtended;
+  if (!isExtended) {
+    paramsContainer.style.display = "none";
+  } else {
+    paramsContainer.style.display = "block";
+  }
+};
+btnTg.addEventListener("click", toggleParameters);
+
+let inter;
+
+const interval = () => {
+  inter = setInterval(() => {
+    setActualValues();
+    renderActualValues(actualTemperature, actualHumidity);
+    tmpSketchObj.setup();
+    htySketchObj.setup();
+  }, 1000);
+};
+
+const togglePlayPause = (e) => {
+  e.preventDefault();
+  isPlaying = !isPlaying;
+  if (isPlaying) {
+    interval();
+  } else {
+    clearInterval(inter);
+  }
+};
+playPause.addEventListener("click", togglePlayPause);

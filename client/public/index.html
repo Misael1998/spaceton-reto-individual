@@ -3,7 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Welcome to Firebase Hosting</title>
+    <title>Inferfaz de lectura de sensores</title>
+    <meta
+      name="description"
+      content="Simulador de interfaz que observa las mediciones de sensores de temperatura y humedad"
+    />
 
     <!-- update the version number as needed -->
     <script defer src="/__/firebase/7.19.1/firebase-app.js"></script>
@@ -26,9 +30,33 @@
   </head>
 
   <body>
+    <header>
+      <nav>
+        <div class="nav-wrapper container">
+          <a href="#" class="brand-logo">Misael Landero</a>
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="sass.html">Historial</a></li>
+            <li><a href="badges.html">Alertas</a></li>
+            <li><a href="collapsible.html">JavaScript</a></li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
     <main class="container">
-      <h2>Parametros de operacion</h2>
-      <section class="row" name="parameters">
+      <section class="row">
+        <h3 style="display: inline-block">Parametros de operacion</h3>
+        <button
+          type="button"
+          id="toggle-parameters"
+          class="btn-small"
+          style="margin: inherit"
+        >
+          Extender/Minimizar
+        </button>
+      </section>
+
+      <section class="row" id="parameters">
         <section class="col s6" name="temperature-range">
           <p>Introduzca rango aceptable de temperatura en grados Celcius</p>
           <form id="tmp-range-form">
@@ -66,7 +94,18 @@
         </section>
       </section>
 
-      <h2>Parametros</h2>
+      <section class="row">
+        <h3 style="display: inline-block">Mediciones:</h3>
+        <button
+          type="button"
+          id="play-pause"
+          class="btn-small"
+          style="margin: inherit"
+        >
+          Iniciar/Pausar
+        </button>
+      </section>
+
       <section class="row" name="parameters-display">
         <article class="col s6" id="tmp-params">
           <h3>Temperatura</h3>
