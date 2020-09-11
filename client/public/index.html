@@ -16,6 +16,7 @@
     <script defer src="/__/firebase/7.19.1/firebase-database.js"></script>
     <script defer src="/__/firebase/7.19.1/firebase-messaging.js"></script>
     <script defer src="/__/firebase/7.19.1/firebase-storage.js"></script>
+    <script defer src="/__/firebase/7.19.1/firebase-firestore.js"></script>
     <!-- initialize the SDK after all desired features are loaded -->
     <script defer src="/__/firebase/init.js"></script>
     <link
@@ -104,7 +105,17 @@
         >
           Iniciar/Pausar
         </button>
+        <button
+          type="button"
+          id="save-readings"
+          class="btn-small"
+          style="margin: inherit"
+        >
+          Guardar
+        </button>
       </section>
+
+      <section class="row" id="status-alerts"></section>
 
       <section class="row" name="parameters-display">
         <article class="col s6" id="tmp-params">
@@ -160,6 +171,7 @@
         }
       });
     </script>
-    <script src="./index.js"></script>
+    <script src="./js/firebase.js"></script>
+    <script src="./js/index.js"></script>
   </body>
 </html>

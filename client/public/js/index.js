@@ -20,14 +20,20 @@ const htyDisplay = document.getElementById("hty-display");
 const tmpParams = document.getElementById("tmp-params");
 const htyParams = document.getElementById("hty-params");
 //inputs(kindof)
-let actualTemperature = 0;
-let actualHumidity = 0;
+let actualTemperature = null;
+let actualHumidity = null;
 //Other
 const paramsContainer = document.getElementById("parameters");
 const btnTg = document.getElementById("toggle-parameters");
 let isExtended = true;
 const playPause = document.getElementById("play-pause");
 let isPlaying = false;
+const btnSave = document.getElementById("save-readings");
+const isEmpty = (obj) => {
+  return Object.keys(obj).length === 0 && obj.constructor === Object;
+};
+//Alerts
+const alertArea = document.getElementById("status-alerts");
 
 //SIMULATION parameters
 //Normal distribution between 0 and 1
@@ -322,6 +328,42 @@ const toggleParameters = (e) => {
 };
 btnTg.addEventListener("click", toggleParameters);
 
+//Check for alert
+const alertCheck = (temperature, humidity) => {
+  let tempStatus = getStatus(temperature, tmpValues);
+  let humdStatus = getStatus(humidity, htyValues);
+
+  if (tempStatus == "green" && humdStatus == "green") {
+    if (actualTemperature != null && actualHumidity != null) {
+      alertArea.innerHTML = `
+      <div class="card-panel green lighten-3 round ">Todo norlmal</div
+      `;
+    } else {
+      alertArea.innerHTML = "";
+    }
+  } else {
+    let render = ``;
+
+    if (tempStatus == "yellow") {
+      render += `<div class="card-panel lime accent-2 round pulse">Alerta</div>`;
+    }
+
+    if (tempStatus == "red") {
+      render += `<div class="card-panel red lighten-1 round pulse">Alerta</div>`;
+    }
+
+    if (humdStatus == "yellow") {
+      render += `<div class="card-panel lime accent-2 round pulse">Alerta</div>`;
+    }
+
+    if (humdStatus == "red") {
+      render += `<div class="card-panel red lighten-1 round pulse">Alerta</div>`;
+    }
+  }
+
+  alertArea.innerHTML = render;
+};
+
 let inter;
 
 const interval = () => {
@@ -330,6 +372,7 @@ const interval = () => {
     renderActualValues(actualTemperature, actualHumidity);
     tmpSketchObj.setup();
     htySketchObj.setup();
+    alertCheck(actualTemperature, actualHumidity);
   }, 1000);
 };
 
@@ -343,3 +386,30 @@ const togglePlayPause = (e) => {
   }
 };
 playPause.addEventListener("click", togglePlayPause);
+
+const onSave = (e) => {
+  e.preventDefault();
+  let data = {};
+
+  if (!isEmpty(tmpValues) && actualTemperature) {
+    data.Temperature = {
+      parameters: tmpValues,
+      temperatureReading: actualTemperature,
+    };
+  }
+
+  if (!isEmpty(htyValues) && actualHumidity) {
+    data.Humidity = {
+      parameters: htyValues,
+      humidityReading: actualHumidity,
+    };
+  }
+
+  if (!isEmpty(data)) {
+    data.date = Date.now();
+    console.log(data);
+  } else {
+    console.log("no data to send");
+  }
+};
+btnSave.addEventListener("click", onSave);
