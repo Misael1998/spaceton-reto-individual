@@ -23,114 +23,129 @@ const htyParams = document.getElementById("hty-params");
 let actualTemperature = 0;
 let actualHumidity = 0;
 
-//simulation parameters
-const simRandom = () => {
-  let tmpRnd;
-  let htyRnd;
-  const randn_bm = () => {
-    let u = 0;
-    let v = 0;
-    while (u === 0) u = Math.random();
-    while (v === 0) v = Math.random();
-    let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-    num = num / 10.0 + 0.5;
-    if (num > 1 || num < 0) return randn_bm();
-    return num;
-  };
-  tmpRnd = randn_bm();
-  htyRnd = randn_bm();
+//SIMULATION parameters
+//Normal distribution between 0 and 1
+const randomND = () => {
+  let u = 0;
+  let v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+  num = num / 10.0 + 0.5;
+  if (num > 1 || num < 0) return randn_bm();
+  return num;
+};
 
-  //Temperature distribution
-  const tempSim = () => {
-    const prob = tmpRnd;
-    if (prob <= 0.8 && prob >= 0.2) {
-      //temperature generator
-      tmpRnd =
-        Math.random() * Math.abs(tmpValues.maxNominal - tmpValues.minNominal);
-      tmpRnd = tmpValues.minNominal + tmpRnd;
-      tmpRnd = tmpRnd.toFixed(2);
+//Temperature simulation
+const temperatureSimulation = (params) => {
+  const { maxNominal, minNominal, delta, minAceptable, maxAceptable } = params;
+  randomSeed = randomND();
+  let generatedTemperature;
 
-      //humidity genenerator
-      htyRnd =
-        Math.random() * Math.abs(htyValues.maxNominal - htyValues.minNominal);
-      htyRnd = htyValues.minNominal + htyRnd;
-      htyRnd = htyRnd > 100 ? 100 : htyRnd.toFixed(2);
-    }
+  if (randomSeed <= 0.8 && randomSeed >= 0.2) {
+    generatedTemperature = Math.random() * Math.abs(maxNominal - minNominal);
+    generatedTemperature = minNominal + generatedTemperature;
+    generatedTemperature = generatedTemperature.toFixed(2);
+  }
 
-    if (prob > 0.8 && prob <= 0.9) {
-      //temperature generator
-      tmpRnd = Math.random() * tmpValues.delta;
-      tmpRnd = tmpValues.maxNominal + tmpRnd;
-      tmpRnd = tmpRnd.toFixed(2);
+  if (randomSeed > 0.8 && randomSeed <= 0.9) {
+    generatedTemperature = Math.random() * delta;
+    generatedTemperature = maxNominal + generatedTemperature;
+    generatedTemperature = generatedTemperature.toFixed(2);
+  }
 
-      //humidity genenerator
-      htyRnd = Math.random() * htyValues.delta;
-      htyRnd = htyValues.maxNominal + htyRnd;
-      htyRnd = htyRnd > 100 ? 100 : htyRnd.toFixed(2);
-    }
+  if (randomSeed >= 0.1 && randomSeed < 0.2) {
+    generatedTemperature = Math.random() * delta;
+    generatedTemperature = minNominal - generatedTemperature;
+    generatedTemperature = generatedTemperature.toFixed(2);
+  }
 
-    if (prob >= 0.1 && prob < 0.2) {
-      //temperature generator
-      tmpRnd = Math.random() * tmpValues.delta;
-      tmpRnd = tmpValues.minNominal - tmpRnd;
-      tmpRnd = tmpRnd.toFixed(2);
+  if (randomSeed < 0.1) {
+    generatedTemperature = Math.random() * 10;
+    generatedTemperature = minAceptable - generatedTemperature;
+    generatedTemperature = generatedTemperature.toFixed(2);
+  }
 
-      //humidity genenerator
-      htyRnd = Math.random() * htyValues.delta;
-      htyRnd = htyValues.minNominal - htyRnd;
-      htyRnd = htyRnd < 0 ? 0 : htyRnd.toFixed(2);
-    }
+  if (randomSeed > 0.9) {
+    generatedTemperature = Math.random() * 10;
+    generatedTemperature = maxAceptable + generatedTemperature;
+    generatedTemperature = generatedTemperature.toFixed(2);
+  }
 
-    if (prob < 0.1) {
-      //Temperature generator
-      tmpRnd = Math.random() * 10;
-      tmpRnd = tmpValues.minAceptable - tmpRnd;
-      tmpRnd = tmpRnd.toFixed(2);
+  return generatedTemperature;
+};
 
-      //humidity genenerator
-      htyRnd = Math.random() * htyValues.minAceptable;
-      htyRnd = htyValues.minAceptable - htyRnd;
-      htyRnd = htyRnd < 0 ? 0 : htyRnd.toFixed(2);
-    }
+//Humidity simulation
+const humiditySimulation = (params) => {
+  const { maxNominal, minNominal, delta, minAceptable, maxAceptable } = params;
+  randomSeed = randomND();
+  let generatedHumidity;
 
-    if (prob > 0.9) {
-      //Temperature generator
-      tmpRnd = Math.random() * 10;
-      tmpRnd = tmpValues.maxAceptable + tmpRnd;
-      tmpRnd = tmpRnd.toFixed(2);
+  if (randomSeed <= 0.8 && randomSeed >= 0.2) {
+    generatedHumidity = Math.random() * Math.abs(maxNominal - minNominal);
+    generatedHumidity = minNominal + generatedHumidity;
+    generatedHumidity =
+      generatedHumidity > 100 ? 100 : generatedHumidity.toFixed(2);
+  }
 
-      //humidity genenerator
-      htyRnd = Math.random() * (100 - htyValues.maxAceptable);
-      htyRnd = htyValues.maxAceptable + htyRnd;
-      htyRnd = htyRnd > 100 ? 100 : htyRnd.toFixed(2);
-    }
+  if (randomSeed > 0.8 && randomSeed <= 0.9) {
+    generatedHumidity = Math.random() * delta;
+    generatedHumidity = maxNominal + generatedHumidity;
+    generatedHumidity =
+      generatedHumidity > 100 ? 100 : generatedHumidity.toFixed(2);
+  }
 
-    return tmpRnd;
-  };
-  tmpRnd = tempSim();
+  if (randomSeed >= 0.1 && randomSeed < 0.2) {
+    generatedHumidity = Math.random() * delta;
+    generatedHumidity = minNominal - generatedHumidity;
+    generatedHumidity =
+      generatedHumidity < 0 ? 0 : generatedHumidity.toFixed(2);
+  }
 
-  actualTemperature = tmpRnd;
+  if (randomSeed < 0.1) {
+    generatedHumidity = Math.random() * minAceptable;
+    generatedHumidity = minAceptable - generatedHumidity;
+    generatedHumidity =
+      generatedHumidity < 0 ? 0 : generatedHumidity.toFixed(2);
+  }
+
+  if (randomSeed > 0.9) {
+    generatedHumidity = Math.random() * (100 - maxAceptable);
+    generatedHumidity = maxAceptable + generatedHumidity;
+    generatedHumidity =
+      generatedHumidity > 100 ? 100 : generatedHumidity.toFixed(2);
+  }
+
+  return generatedHumidity;
+};
+
+const renderActualValues = (temperature, humidity) => {
+  //Temperature status
   tmpDisplay.innerHTML = `Temperatura actual: ${
-    isNaN(tmpRnd) ? "-" : tmpRnd
+    isNaN(temperature) ? "-" : temperature
   } C`;
-  actualHumidity = htyRnd;
-  htyDisplay.innerHTML = `Humedad actual: ${isNaN(htyRnd) ? "-" : htyRnd} %`;
+  //Humidity status
+  htyDisplay.innerHTML = `Humedad actual: ${
+    isNaN(humidity) ? "-" : humidity
+  } %`;
 };
 
 //Status of values
 const getStatus = (value, valueRanges) => {
+  const { minAceptable, maxAceptable, minNominal, maxNominal } = valueRanges;
+
   let status = "green";
-  if (value < valueRanges.minAceptable || value > valueRanges.maxAceptable) {
+  if (value < minAceptable || value > maxAceptable) {
     status = "red";
   }
 
-  if (value >= valueRanges.minNominal && value <= valueRanges.maxNominal) {
+  if (value >= minNominal && value <= maxNominal) {
     status = "green";
   }
 
   if (
-    (value < valueRanges.minNominal && value >= valueRanges.minAceptable) ||
-    (value > valueRanges.maxNominal && value <= valueRanges.maxAceptable)
+    (value < minNominal && value >= minAceptable) ||
+    (value > maxNominal && value <= maxAceptable)
   ) {
     status = "yellow";
   }
@@ -138,11 +153,9 @@ const getStatus = (value, valueRanges) => {
   return status;
 };
 
-const getValues = () => {
-  return {
-    actualTemperature,
-    actualHumidity,
-  };
+const setActualValues = () => {
+  actualTemperature = temperatureSimulation(tmpValues);
+  actualHumidity = humiditySimulation(htyValues);
 };
 
 //Temperature sketch
@@ -294,7 +307,8 @@ htyRangeForm.addEventListener("submit", onHtySubmit);
 
 //Alert condition
 setInterval(() => {
-  simRandom();
+  setActualValues();
+  renderActualValues(actualTemperature, actualHumidity);
   tmpSketchObj.setup();
   htySketchObj.setup();
 }, 1000);
