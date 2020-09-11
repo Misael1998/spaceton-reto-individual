@@ -165,6 +165,16 @@ const getStatus = (value, valueRanges) => {
   return status;
 };
 
+const translateStatus = (status) => {
+  let translation = "nominal";
+
+  if (status == "green") translation = "nominal";
+  if (status == "yellow") translation = "critical";
+  if (status == "red") translation = "exceed";
+
+  return translation;
+};
+
 const setActualValues = () => {
   actualTemperature = temperatureSimulation(tmpValues);
   actualHumidity = humiditySimulation(htyValues);
@@ -328,6 +338,14 @@ const toggleParameters = (e) => {
 };
 btnTg.addEventListener("click", toggleParameters);
 
+//Save to db
+const saveToDB = (collection, data) => {
+  db.collection(collection)
+    .add(data)
+    .then((res) => console.log("Data saved"))
+    .catch((err) => console.log(err));
+};
+
 //Check for alert
 const alertCheck = (temperature, humidity) => {
   let tempStatus = getStatus(temperature, tmpValues);
@@ -336,32 +354,73 @@ const alertCheck = (temperature, humidity) => {
   if (tempStatus == "green" && humdStatus == "green") {
     if (actualTemperature != null && actualHumidity != null) {
       alertArea.innerHTML = `
-      <div class="card-panel green lighten-3 round ">Todo norlmal</div
+      <div class="card-panel green lighten-3 round center-align">
+        Los valores de humedad y temperatura estan en los rangos normales
+      </div>
       `;
     } else {
       alertArea.innerHTML = "";
     }
   } else {
     let render = ``;
+    let data = {};
 
     if (tempStatus == "yellow") {
-      render += `<div class="card-panel lime accent-2 round pulse">Alerta</div>`;
+      render += `
+      <div class="card-panel lime accent-2 round pulse center-align">
+        La temperatura esta en un valor cítico
+      </div>`;
+
+      data.Temperature = {
+        parameters: tmpValues,
+        temperatureReading: temperature,
+        status: translateStatus(tempStatus),
+      };
     }
 
     if (tempStatus == "red") {
-      render += `<div class="card-panel red lighten-1 round pulse">Alerta</div>`;
+      render += `
+      <div class="card-panel red lighten-1 round pulse center-align">
+        La temperatura esta fuera de los rangos de operacion
+      </div>`;
+
+      data.Temperature = {
+        parameters: tmpValues,
+        temperatureReading: temperature,
+        status: translateStatus(tempStatus),
+      };
     }
 
     if (humdStatus == "yellow") {
-      render += `<div class="card-panel lime accent-2 round pulse">Alerta</div>`;
+      render += `
+      <div class="card-panel lime accent-2 round pulse center-align">
+        La humedad esta en un valor crítico
+      </div>`;
+
+      data.Humidity = {
+        parameters: htyValues,
+        temperatureReading: humidity,
+        status: translateStatus(humdStatus),
+      };
     }
 
     if (humdStatus == "red") {
-      render += `<div class="card-panel red lighten-1 round pulse">Alerta</div>`;
-    }
-  }
+      render += `
+      <div class="card-panel red lighten-1 round pulse">
+        La humedad esta fuera de los rangos de operacion
+      </div>`;
 
-  alertArea.innerHTML = render;
+      data.Humidity = {
+        parameters: htyValues,
+        temperatureReading: humidity,
+        status: translateStatus(humdStatus),
+      };
+    }
+    alertArea.innerHTML = render;
+    data.date = Date.now();
+
+    saveToDB("Alerts", data);
+  }
 };
 
 let inter;
@@ -392,22 +451,31 @@ const onSave = (e) => {
   let data = {};
 
   if (!isEmpty(tmpValues) && actualTemperature) {
+    let status = getStatus(actualTemperature, tmpValues);
+    status = translateStatus(status);
+
     data.Temperature = {
       parameters: tmpValues,
       temperatureReading: actualTemperature,
+      status,
     };
   }
 
   if (!isEmpty(htyValues) && actualHumidity) {
+    let status = getStatus(actualHumidity, htyValues);
+    status = translateStatus(status);
+
     data.Humidity = {
       parameters: htyValues,
       humidityReading: actualHumidity,
+      status,
     };
   }
 
   if (!isEmpty(data)) {
     data.date = Date.now();
     console.log(data);
+    saveToDB("Data", data);
   } else {
     console.log("no data to send");
   }
