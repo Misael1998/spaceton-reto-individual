@@ -8,6 +8,13 @@ const getClass = (status) => {
   return cssClass;
 };
 
+const parseDate = (date) => {
+  let day = date.getDate();
+  let month = date.getMonth() + 1;
+  let year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   db.collection("Data")
     .get()
@@ -37,6 +44,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         </p>
                         <p>
                             Máximo aceptable: ${parameters.maxAceptable}
+                        </p>
+                        <br></br>
+                        <p>
+                            Fecha: ${parseDate(date)} 
                         </p>
                     </div>
                     <div class="card-action">
@@ -68,6 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         </p>
                         <p>
                             Máximo aceptable: ${parameters.maxAceptable} C
+                        </p>
+                        <br></br>
+                        <p>
+                            Fecha: ${parseDate(date)} 
                         </p>
                     </div>
                     <div class="card-action">
